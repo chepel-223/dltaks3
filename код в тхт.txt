@@ -1,0 +1,146 @@
+public class Main {
+    public static void main(String[] args)
+    {
+
+        System.out.println("Сообщение:");
+        int x = 45;
+        String bin = String.format("%8s", Integer.toBinaryString(x)).replace(' ', '0');
+        System.out.println(x);
+        System.out.println(bin);
+
+        String[][] S = new String[4][4];
+        String[] temp = new String[2];
+
+        S[0]= new String[]{"1000", "1001", "1010", "1011"};
+        S[1]= new String[]{"1100", "1101", "1110", "1111"};
+        S[2]= new String[]{"0100", "0101", "0110", "0111"};
+        S[3]= new String[]{"0000", "0001", "0010", "0011"};
+
+
+
+        //разделяем сообщение пополам
+        String[] binH = {bin.substring(0, bin.length()/2),bin.substring(bin.length()/2)};
+
+        //разделяем половину сообщения пополам для использования таблицы подстановки
+        temp[0] = binH[0].substring(0,binH[0].length()/2);
+        temp[1] = binH[0].substring(binH[0].length()/2);
+
+        //заменяем первую половину сообщения при помощи табл. подстановки
+        int i = match(temp[0]);
+        int j = match(temp[1]);
+        binH[0] = S[i][j];
+
+        //для второй половины:
+        temp[0] = binH[1].substring(0,binH[0].length()/2);
+        temp[1] = binH[1].substring(binH[0].length()/2);
+
+        i = match(temp[0]);
+        j = match(temp[1]);
+        binH[1] = S[i][j];
+        //склеиваем обратно 2 половинки
+        bin = binH[0] + binH[1];
+        System.out.println("После подстановки по таблице:");
+        System.out.println(bin);
+
+        //перестановка
+        System.out.println("После перестановки:");
+        bin = swap(bin);
+        System.out.println(bin);
+
+        //перестановка обратно
+        System.out.println("После перестановки обратно:");
+        bin = swapBack(bin);
+        System.out.println(bin);
+
+        binH = new String[] {bin.substring(0, bin.length() / 2), bin.substring(bin.length() / 2)};
+
+        //обратная подскановка
+        System.out.println("После обратной подстановки:");
+        binH[0] = matchBack(binH[0],S);
+        binH[1] = matchBack(binH[1],S);
+
+        //склеиваем половинки обратно
+        bin = binH[0] + binH[1];
+
+
+        System.out.println(bin);
+        int x1=Integer.parseInt(bin,2);
+        System.out.println("Восстановленное сообщение:");
+        System.out.println(x1);
+    }
+
+    static byte match(String s)
+    {
+        byte m = 0;
+        if(s.equals("00")) m = 0;
+        if(s.equals("01")) m = 1;
+        if(s.equals("10")) m = 2;
+        if(s.equals("11")) m = 3;
+        return m;
+    }
+
+
+    static String matchBack(String s, String[][] table)
+    {
+        String[][] invTable = new String[4][4];
+
+        //генерация обратной таблицы
+        for(int i = 0; i < 4; i++)
+        {
+            for(int j = 0; j < 4; j++)
+            {
+                invTable[i][j]=String.format("%2s", Integer.toBinaryString(i)).replace(' ', '0')+String.format("%2s", Integer.toBinaryString(j)).replace(' ', '0');
+             //   System.out.println(invTable[i][j]);
+
+            }
+        }
+
+        int temp1 = 0, temp2 = 0;
+        for(int i = 0; i < 4; i++)
+        {
+            for(int j = 0; j < 4; j++)
+            {
+                if(s.equals(table[i][j]))   {temp1 = i; temp2 = j;}
+            }
+        }
+
+return invTable[temp1][temp2];
+    }
+
+
+
+    static String swap(String s)
+    {
+        char[] c = s.toCharArray();
+        //0->2; 1->0; 2->1; 3->5; 4->6; 5->3; 6->7; 7->4
+        char[] temp = new char[c.length];
+        temp[2]=c[0];
+        temp[0]=c[1];
+        temp[1]=c[2];
+        temp[5]=c[3];
+        temp[6]=c[4];
+        temp[3]=c[5];
+        temp[7]=c[6];
+        temp[4]=c[7];
+        return new String(temp);
+    }
+
+
+    static String swapBack(String s)
+    {
+        char[] c = s.toCharArray();
+        //2->0; 0->1; 1->2; 5->3; 6->4; 3->5; 7->6; 4->7
+        char[] temp = new char[c.length];
+        temp[0]=c[2];
+        temp[1]=c[0];
+        temp[2]=c[1];
+        temp[3]=c[5];
+        temp[4]=c[6];
+        temp[5]=c[3];
+        temp[6]=c[7];
+        temp[7]=c[4];
+        return new String(temp);
+    }
+
+}
+
